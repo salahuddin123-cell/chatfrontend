@@ -44,8 +44,11 @@ const Register = () => {
               "& > :not(style)": {
                 m: 1,
                 width: "50ch",
-                "@media (max-width: 820px)": {
+                "@media (max-width: 1020px)": {
                   width: "35ch",
+                },
+                "@media (max-width: 520px)": {
+                  width: "28ch",
                 },
               },
             }}
