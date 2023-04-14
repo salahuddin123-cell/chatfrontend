@@ -39,6 +39,8 @@ const ChatuiPage = () => {
     const [onlineusers,setonlineusers] =useState([])
     const [notified,setnotified]=useState([])
     const [emojipicked,setemojipicked]=useState(false)
+    const [filtered,setfiltered]=useState([])
+    const [searchval, setsearchval] = useState('')
     const navigate=useNavigate()
     let me=(sender.Name+reciever.Name).split('').sort().join(',')
    
@@ -188,7 +190,26 @@ const handlelogout=()=>{
 }
 
 
-
+useEffect(()=>{
+  let arr=[]
+  if(searchval!==null||''){
+   
+    users?.filter(e=>e.Name!==sender.Name)?.forEach((elem)=>{
+     
+     if(elem.Name?.toLowerCase().search(searchval?.toLowerCase())> -1) {
+      arr.push(elem)
+    
+     }
+    }
+      )
+      if(arr){
+        setfiltered(arr)
+      }
+  
+  }else{
+setfiltered(users?.filter(e=>e.Name!==sender.Name))
+  }
+},[searchval,users])
   
     useEffect(() => {
  const fetchdata=async()=>{
@@ -227,12 +248,14 @@ const handlelogout=()=>{
               placeholder="search user"
               size='small'
               variant="standard"
+              value={searchval}
+              onChange={(e)=>setsearchval(e.target.value)}
               color="primary"
               focused
             />
          
           <div>
-          {users?.filter(e=>e.Name!==sender.Name)?.map((elem)=>{
+          {filtered?.map((elem)=>{
             return <div className="user">
                   <div>
                   <Avatar sx={{ bgcolor: deepOrange[500] }}>{elem?.Name[0]}</Avatar>
