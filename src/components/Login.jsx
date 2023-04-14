@@ -6,7 +6,8 @@ import TextField from "@mui/material/TextField";
 import LoginLayout from "./LoginLayout";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import { ToastContainer, toast } from 'react-toastify';
+  import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
   const { register, handleSubmit } = useForm();
@@ -20,10 +21,20 @@ const Login = () => {
         localStorage.setItem("user",JSON.stringify(res.data.token))
         navigate('/chat')
       }
-      else Promise.reject()
+      else{
+       
+        Promise.reject()
+      }
     
     }catch(err){
-      console.log(err)
+      if(err.response.status==400){
+        toast("Invalid credential")
+      }
+      if(err.response.status==403){
+        toast("Pssword does not match")
+      }else{
+        console.log(err.response)
+      }
     }
    
     
@@ -75,7 +86,7 @@ const Login = () => {
           </Box>
           <div className="loginsubmit">
           <input className="submit" value="Submit" type="submit" />
-       
+        <ToastContainer />
           </div>
           
         </form>
