@@ -237,8 +237,8 @@ const handlelogout=()=>{
                   <div>
                   <Avatar sx={{ bgcolor: deepOrange[500] }}>{elem?.Name[0]}</Avatar>
             </div>
-            <div>
-              <b onClick={()=>{setreciever(elem);clearnotified(elem.Name)}} style={{cursor:"pointer"}}>{elem.Name}</b>
+            <div className={elem.Name==reciever.Name ?'active':'inactive'}>
+              <b onClick={()=>{setreciever(elem);clearnotified(elem.Name)}} style={{cursor:"pointer"}} >{elem.Name}</b>
               <p>{elem.Occupation}</p>
             </div>
             <div className="notification">

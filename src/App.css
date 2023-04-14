@@ -367,6 +367,11 @@ style={{width:"20px",height:"20px", margin:"auto",display:"grid",placeItems:"cen
 .none{
   display: none;
 }
+.active{
+  background-color: #4CAF50;
+  padding: 0px 20px;
+  border-radius: 5px;
+}
 @media screen and (max-width:1080px) {
   .chatroom{
     width: 80%;
