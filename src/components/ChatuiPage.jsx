@@ -120,13 +120,8 @@ useEffect(() => {
 useEffect(() => {
   fetch('https://chatappbackend-3ieq.onrender.com/chat/all',{
 
-   method:'get',
-   headers:{
-     'accept': 'application/json',
-     'Access-Control-Allow-Origin': "*",
-     'content-type': 'application/x-www-form-urlencoded',
-     'Access-Control-Allow-Credentials': 'true',
- }
+   method:'get'
+
   } )
   .then(data=>data.json())
   .then(res=>{
