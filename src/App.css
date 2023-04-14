@@ -380,6 +380,7 @@ style={{width:"20px",height:"20px", margin:"auto",display:"grid",placeItems:"cen
   }
   .chatui{
     flex-direction: column;
+    height: 90vh;
   }
   .chatui>div:nth-child(1){
    
@@ -398,11 +399,6 @@ style={{width:"20px",height:"20px", margin:"auto",display:"grid",placeItems:"cen
   }
   .form{
     width: 100%;
-    height: 15%;
-  
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-   padding: 5px 20px;
+
   }
 }
