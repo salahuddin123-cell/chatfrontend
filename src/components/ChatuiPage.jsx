@@ -1,9 +1,7 @@
 import React, { useState,useEffect ,useRef, useCallback} from "react";
 import CreateOutlinedIcon from "@mui/icons-material/CreateOutlined";
 import TextField from "@mui/material/TextField";
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+
 import CreateTwoToneIcon from '@mui/icons-material/CreateTwoTone';
 import AddAPhotoTwoToneIcon from '@mui/icons-material/AddAPhotoTwoTone';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
