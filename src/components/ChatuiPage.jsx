@@ -278,7 +278,7 @@ const handlelogout=()=>{
           {messages.filter(e=>e.me==me).map((elem)=>{
             return <div className={elem.user==sender.Name?'left':"right"}>
                 <div>
-                <Avatar sx={{ bgcolor: deepOrange[500] }}>{elem.user[0]}</Avatar>
+                <Avatar sx={{ bgcolor: deepOrange[500] }}>{elem?.user[0]}</Avatar>
               </div>
                 <p >{elem.message}<br />  <small style={{textAlign:"end"}}>{moment(elem.time).format('MMMM-DD hh:mm a')}</small></p>
               
