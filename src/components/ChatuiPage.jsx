@@ -193,7 +193,7 @@ const handlelogout=()=>{
     useEffect(() => {
  const fetchdata=async()=>{
     try{
-        const res=  await axios.get('http://localhost:4001/user/all')
+        const res=  await axios.get('https://chatappbackend-3ieq.onrender.com/chat/all/user/all')
         if(res.status==200){
             setusers(res.data)
         }
