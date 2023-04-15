@@ -10,7 +10,8 @@ import { Link } from 'react-router-dom'
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import LoginLayout from "./LoginLayout";
-
+import { ToastContainer, toast } from 'react-toastify';
+  import 'react-toastify/dist/ReactToastify.css';
 
 const Register = () => {
   const { register, handleSubmit } = useForm();
@@ -26,7 +27,7 @@ const Register = () => {
     
     }catch(err){
       if(err.response.status==400){
-        alert(err.response)
+        toast("User email already exist")
       }
     }
    
@@ -96,7 +97,7 @@ const Register = () => {
            
            
               </FormControl>
-
+              <ToastContainer />
     
           </Box>
           <div className="loginsubmit">
