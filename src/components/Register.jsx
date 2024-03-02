@@ -19,7 +19,7 @@ const Register = () => {
   const navigate=useNavigate()
  
   const convertTobase64=(e)=>{
-    console.log(e)
+    
     var reader=new FileReader();
     reader.readAsDataURL(e.target.files[0])
     reader.onload=()=>{
@@ -36,7 +36,7 @@ const Register = () => {
     const newdata={...data,image,Lastseen:new Date().getTime()}
    const res=  await axios.post('https://chatappbackend-3ieq.onrender.com/register/new',newdata)
    
-   if(res.status==200){
+   if(res.status==201){
     localStorage.setItem("user",JSON.stringify(res.data.token))
     navigate('/chat')
    }
