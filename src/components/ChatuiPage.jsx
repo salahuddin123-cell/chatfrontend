@@ -269,7 +269,7 @@ setfiltered(users?.filter(e=>e.Name!==sender.Name))
           <div>
             <div>
             {/* <Avatar sx={{ bgcolor: deepOrange[500] }}>{sender?.Name[0]}</Avatar> */}
-           {sender.image&& <img className="avtar" src={sender.image}  />}
+           {sender.image? <img className="avtar" src={sender.image}  />:<Avatar sx={{ bgcolor: deepOrange[500] }}>{sender?.Name[0]}</Avatar>}
             </div>
             <div>
               <b style={{color:"blue"}}>{sender?.Name}</b>
@@ -318,7 +318,7 @@ setfiltered(users?.filter(e=>e.Name!==sender.Name))
             <div>
             <div>
             {/* <Avatar sx={{ bgcolor: deepOrange[500] }}>{reciever?.Name[0]}</Avatar> */}
-            {reciever.image&&  <img className="avtar" src={reciever.image} alt="" />}
+            {reciever.image?  <img className="avtar" src={reciever.image} alt="" />:<Avatar sx={{ bgcolor: deepOrange[500] }}>{reciever?.Name[0]}</Avatar>}
             </div>
             <div className="notification">
              {reciever.Occupation&& <b  style={{color:"blue"}}>{reciever?.Name}(<small className="oc">{reciever.Occupation}</small>)</b>}
