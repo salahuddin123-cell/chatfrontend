@@ -34,7 +34,7 @@ const Register = () => {
   const onSubmit =async (data) => {
     try{
     const newdata={...data,image,Lastseen:new Date().getTime()}
-   const res=  await axios.post('http://localhost:4001/register/new',newdata)
+   const res=  await axios.post('https://chatappbackend-3ieq.onrender.com/register/new',newdata)
    
    if(res.status==200){
     localStorage.setItem("user",JSON.stringify(res.data.token))

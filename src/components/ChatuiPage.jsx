@@ -54,7 +54,7 @@ const ChatuiPage = () => {
     },[localStorage.getItem('user')])
 
     useEffect(()=>{
-        socket.current=io.connect("http://localhost:4001") 
+        socket.current=io.connect("https://chatappbackend-3ieq.onrender.com") 
         return () => {
           socket.current.disconnect();
         };
@@ -68,7 +68,7 @@ const ChatuiPage = () => {
           socket.current.on('leave',(data)=>{
             const senddata=async()=>{
               try{
-                  const res=  await axios.post('http://localhost:4001/user/lsupdate',{data})
+                  const res=  await axios.post('https://chatappbackend-3ieq.onrender.com/user/lsupdate',{data})
                   if(res.status==200){
                     console.log(data)
                   }
@@ -144,7 +144,7 @@ useEffect(() => {
 }, [msgsent,messages,msg])
 
 useEffect(() => {
-  fetch('http://localhost:4001/chat/all',{
+  fetch('https://chatappbackend-3ieq.onrender.com/chat/all',{
 
    method:'get'
 
@@ -248,7 +248,7 @@ setfiltered(users?.filter(e=>e.Name!==sender.Name))
     useEffect(() => {
  const fetchdata=async()=>{
     try{
-        const res=  await axios.get('http://localhost:4001/user/all')
+        const res=  await axios.get('https://chatappbackend-3ieq.onrender.com/user/all')
         if(res.status==200){
             setusers(res.data)
         }
