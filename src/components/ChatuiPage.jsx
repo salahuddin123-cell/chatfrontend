@@ -298,7 +298,7 @@ setfiltered(users?.filter(e=>e.Name!==sender.Name))
                     {elem.image?<img className="avtar" src={elem.image} alt="no" />:<Avatar sx={{ bgcolor: deepOrange[500] }}>{elem?.Name[0]}</Avatar>}
                 
             </div>
-            <div className={elem.Name==reciever.Name ?'active':'inactive'}>
+            <div className={elem._id==reciever._id ?'active':'inactive'}>
               <b onClick={()=>{setreciever(elem);clearnotified(elem.Name)}} style={{cursor:"pointer"}} >{elem.Name}</b> 
               
               {!checkonline(elem.Name)&&<p style={{fontSize:"12px"}}>last seen {formattime(elem.Lastseen)}</p>}

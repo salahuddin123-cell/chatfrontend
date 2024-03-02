@@ -34,7 +34,7 @@ const Register = () => {
   const onSubmit =async (data) => {
     try{
     const newdata={...data,image,Lastseen:new Date().getTime()}
-   const res=  await axios.post('https://chatappbackend-3ieq.onrender.com/register/new',newdata)
+   const res=  await axios.post('http://localhost:4001/register/new',newdata)
    
    if(res.status==201){
     localStorage.setItem("user",JSON.stringify(res.data.token))
@@ -43,13 +43,19 @@ const Register = () => {
    else Promise.reject()
    console.log(res.status)
     }catch(err){
-      
-      if(err?.response?.status==400){
-        toast("User email already exist")
-      }
+      console.log(err.response?.data?.error?.code)
      
+      if(err?.response?.status==403){
+        if(err.response?.data?.error?.code==11000){
+          toast("User email already exist")
+        }else{
+        toast("User email is required")
+        }
+      }
+    
       else{
-        toast("Image size is too large ")
+        //toast("Image size is too large ")
+        navigate('/login')
         reset();
       }
     }
