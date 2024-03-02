@@ -14,7 +14,7 @@ import { ToastContainer, toast } from 'react-toastify';
   import 'react-toastify/dist/ReactToastify.css';
 
 const Register = () => {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit,reset } = useForm();
   const [image,setimage]=useState('')
   const navigate=useNavigate()
  
@@ -50,6 +50,7 @@ const Register = () => {
      
       else{
         toast("Image size is too large ")
+        reset();
       }
     }
    
