@@ -91,7 +91,7 @@ margin-right:  1rem;
 }
 .right{
   
-  color: rgb(236, 7, 45);
+ 
   margin-left: 100px;
  
 }
@@ -99,10 +99,11 @@ margin-right:  1rem;
   display: inline-block;
   margin: .2rem .6rem;
   padding: 0 .3rem;
-  background-color: rgb(37, 211, 102);
+  background: wheat;
 }
 .right p{
-  background: wheat;
+ 
+  background-color: rgb(37, 211, 102);
   margin: .2rem .6rem;
   padding: 0 .3rem;
 }
@@ -290,7 +291,7 @@ margin-right:  1rem;
   height: 70%;
 
   display: flex;
-  padding: 20px;
+ 
   flex-direction: column;
   overflow-y: scroll;
 }
@@ -342,16 +343,22 @@ style={{width:"20px",height:"20px", margin:"auto",display:"grid",placeItems:"cen
 .notification{
   display: flex;
   flex-direction: row;
-  gap: 10px;
+  gap: 30px;
 
 }
 .notify{
   background-color: red;
   color: white;
-  font-size: 10px;
-  padding: 1px 5px;
+  line-height: 20px;
+  text-align:start;
   border-radius: 1px;
 
+}
+.oc{
+  font-size: 12px;
+}
+.ls{
+ transform: translateY(6px);
 }
 .online{
   width: 10px;
@@ -371,6 +378,11 @@ style={{width:"20px",height:"20px", margin:"auto",display:"grid",placeItems:"cen
   background-color: #4CAF50;
   padding: 0px 20px;
   border-radius: 5px;
+}
+.avtar{
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
 }
 @media screen and (max-width:1080px) {
   .chatroom{

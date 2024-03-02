@@ -1,7 +1,7 @@
-import React, { useState,useEffect ,useRef, useCallback} from "react";
+import React, { useState,useEffect ,useRef, useCallback, useMemo} from "react";
 import CreateOutlinedIcon from "@mui/icons-material/CreateOutlined";
 import TextField from "@mui/material/TextField";
-
+import TextsmsIcon from '@mui/icons-material/Textsms';
 import CreateTwoToneIcon from '@mui/icons-material/CreateTwoTone';
 import AddAPhotoTwoToneIcon from '@mui/icons-material/AddAPhotoTwoTone';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
@@ -33,7 +33,7 @@ const ChatuiPage = () => {
     const messageRef=useRef(null)
     const [reciever,setreciever]=useState({Name:"You"})
     const [id, setid] = useState('');
-    
+    const [maches, setmaches] = useState(window.matchMedia("(min-width:768px)").matches)
     const [msg,setmsg]=useState('')
     const [msgsent, setmsgsent] = useState(false)
     const [messages,setmessages]=useState([])
@@ -49,12 +49,12 @@ const ChatuiPage = () => {
       let user1=localStorage.getItem('user')
   
     if(!user1){
-     navigate('/login')
+   
     }
     },[localStorage.getItem('user')])
 
     useEffect(()=>{
-        socket.current=io.connect("https://chatappbackend-3ieq.onrender.com") 
+        socket.current=io.connect("http://localhost:4001") 
         return () => {
           socket.current.disconnect();
         };
@@ -64,7 +64,29 @@ const ChatuiPage = () => {
         messageRef.current.scrollIntoView()
         },[messages])
 
-  
+        useEffect(() => {
+          socket.current.on('leave',(data)=>{
+            const senddata=async()=>{
+              try{
+                  const res=  await axios.post('http://localhost:4001/user/lsupdate',{data})
+                  if(res.status==200){
+                    console.log(data)
+                  }
+                   
+                   }catch(err){
+                     console.log(err)
+                   }
+           }
+           senddata()
+            
+          })
+          return () => {
+            socket.current.off('leave')
+            
+          }
+         
+        }, [socket.current])
+        
 
       useEffect(() => {
         
@@ -88,11 +110,12 @@ const ChatuiPage = () => {
 useEffect(() => {
   socket.current.on('member',(data)=>{
     setonlineusers(data.users2)
-    console.log(data)
+    console.log(data,'s')
    })
 
   return () => {
     socket.current.off('member')
+    console.log()
   }
 }, [socket.current])
 
@@ -121,7 +144,7 @@ useEffect(() => {
 }, [msgsent,messages,msg])
 
 useEffect(() => {
-  fetch('https://chatappbackend-3ieq.onrender.com/chat/all',{
+  fetch('http://localhost:4001/chat/all',{
 
    method:'get'
 
@@ -141,8 +164,10 @@ const checkonline= useCallback(
   (name) => {
    const online=onlineusers.find(e=>e.user==name)
    if(online){
+    
     return true
    }else{
+    
     return false
    }
   },
@@ -161,6 +186,14 @@ const checknewmsg= useCallback(
   },
   [notified,sender.Name]
 );
+
+const formattime=useCallback((time) => {
+
+  const start=moment(time,'D-MM-YYD hh:mm:ss')
+  const mintdiff=moment(moment(time)).fromNow()
+  console.log(time)
+  return mintdiff
+},[])
 
 const clearnotified=(name)=>{
  
@@ -215,13 +248,15 @@ setfiltered(users?.filter(e=>e.Name!==sender.Name))
     useEffect(() => {
  const fetchdata=async()=>{
     try{
-        const res=  await axios.get('https://chatappbackend-3ieq.onrender.com/user/all')
+        const res=  await axios.get('http://localhost:4001/user/all')
         if(res.status==200){
             setusers(res.data)
         }
          
          }catch(err){
-           console.log(err)
+          localStorage.removeItem('user')
+          navigate('/login')
+
          }
  }
  fetchdata()
@@ -233,7 +268,8 @@ setfiltered(users?.filter(e=>e.Name!==sender.Name))
         <div className="fisrtdiv">
           <div>
             <div>
-            <Avatar sx={{ bgcolor: deepOrange[500] }}>{sender?.Name[0]}</Avatar>
+            {/* <Avatar sx={{ bgcolor: deepOrange[500] }}>{sender?.Name[0]}</Avatar> */}
+           {sender.image&& <img className="avtar" src={sender.image}  />}
             </div>
             <div>
               <b style={{color:"blue"}}>{sender?.Name}</b>
@@ -259,16 +295,19 @@ setfiltered(users?.filter(e=>e.Name!==sender.Name))
           {filtered?.map((elem)=>{
             return <div className="user">
                   <div>
-                  <Avatar sx={{ bgcolor: deepOrange[500] }}>{elem?.Name[0]}</Avatar>
+                    {elem.image&&<img className="avtar" src={elem.image} alt="no" />}
+                
             </div>
             <div className={elem.Name==reciever.Name ?'active':'inactive'}>
-              <b onClick={()=>{setreciever(elem);clearnotified(elem.Name)}} style={{cursor:"pointer"}} >{elem.Name}</b>
-              <p>{elem.Occupation}</p>
+              <b onClick={()=>{setreciever(elem);clearnotified(elem.Name)}} style={{cursor:"pointer"}} >{elem.Name}</b> 
+              
+              {!checkonline(elem.Name)&&<p style={{fontSize:"12px"}}>last seen {formattime(elem.Lastseen)}</p>}
             </div>
             <div className="notification">
-            {checknewmsg(elem.Name)&&<p className="notify" >New</p>}
+            {checknewmsg(elem.Name)&&<TextsmsIcon sx={{ color: 'blue'}}/>}
               
             {checkonline(elem.Name)&&<p className="online"></p>} 
+            
             </div>
             </div>
           })}
@@ -278,11 +317,14 @@ setfiltered(users?.filter(e=>e.Name!==sender.Name))
           <div>
             <div>
             <div>
-            <Avatar sx={{ bgcolor: deepOrange[500] }}>{reciever?.Name[0]}</Avatar>
+            {/* <Avatar sx={{ bgcolor: deepOrange[500] }}>{reciever?.Name[0]}</Avatar> */}
+            {reciever.image&&  <img className="avtar" src={reciever.image} alt="" />}
             </div>
             <div className="notification">
-              <b  style={{color:"blue"}}>{reciever?.Name}</b>
+             {reciever.Occupation&& <b  style={{color:"blue"}}>{reciever?.Name}(<small className="oc">{reciever.Occupation}</small>)</b>}
               {checkonline(reciever?.Name)&&<p className="online"></p>} 
+               
+             {reciever.Occupation&& !checkonline(reciever.Name)&&<p className="ls" style={{fontSize:"14px"}}>last seen {formattime(reciever.Lastseen)}</p>}
             </div>
             </div>
             <div>
@@ -295,7 +337,7 @@ setfiltered(users?.filter(e=>e.Name!==sender.Name))
           <div className="messages">
            
           {messages.filter(e=>e.me==me).map((elem)=>{
-            return <div className={elem.user==sender.Name?'left':"right"}>
+            return <div className={elem.user==sender.Name?'right':"left"}>
                 <div>
                 <Avatar sx={{ bgcolor: deepOrange[500] }}>{elem.user&&elem.user[0]}</Avatar>
               </div>
@@ -315,9 +357,9 @@ setfiltered(users?.filter(e=>e.Name!==sender.Name))
             </div>
             <div>
             {/* <AddAPhotoTwoToneIcon style={{background:"blue",color:"white"}}/> */}
-             <SentimentSatisfiedAltIcon onClick={()=>setemojipicked(!emojipicked)}/>
+             {maches&&<SentimentSatisfiedAltIcon onClick={()=>setemojipicked(!emojipicked)}/>}
            
-           <div  className={emojipicked?'block':'none'} ><EmojiPicker  height={500} width={400} onEmojiClick={(e)=>setmsg(msg+e.emoji)} /></div> 
+           <div  className={emojipicked?'block':'none'} ><EmojiPicker  height={400} width={400} onEmojiClick={(e)=>setmsg(msg+e.emoji)} /></div> 
               <button type="submit"  style={{background:"blue",color:"white",height:'30px'}} onClick={(e)=>{e.preventDefault();send()}}> <SendIcon/></button> 
             </div>
           

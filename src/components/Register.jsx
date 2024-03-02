@@ -1,4 +1,4 @@
-import React ,{useContext}from "react";
+import React ,{useContext, useState}from "react";
 import { useForm } from "react-hook-form";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
@@ -15,19 +15,41 @@ import { ToastContainer, toast } from 'react-toastify';
 
 const Register = () => {
   const { register, handleSubmit } = useForm();
+  const [image,setimage]=useState('')
   const navigate=useNavigate()
  
+  const convertTobase64=(e)=>{
+    console.log(e)
+    var reader=new FileReader();
+    reader.readAsDataURL(e.target.files[0])
+    reader.onload=()=>{
+      setimage(reader.result)
+    }
+    reader.onerror=(error)=>{
+      console.log(error)
+    }
+  }
+
+
   const onSubmit =async (data) => {
     try{
-   const res=  await axios.post('https://chatappbackend-3ieq.onrender.com/register/new',data)
+    const newdata={...data,image,Lastseen:new Date().getTime()}
+   const res=  await axios.post('http://localhost:4001/register/new',newdata)
+   
    if(res.status==200){
-    navigate('/login')
+    localStorage.setItem("user",JSON.stringify(res.data.token))
+    navigate('/chat')
    }
    else Promise.reject()
-    
+   console.log(res.status)
     }catch(err){
-      if(err.response.status==400){
+      
+      if(err?.response?.status==400){
         toast("User email already exist")
+      }
+     
+      else{
+        toast("Image size is too large ")
       }
     }
    
@@ -86,25 +108,27 @@ const Register = () => {
               placeholder="Sex"
               
                   {...register("Occupation", { required: "This field is required" })} >
-                    <option selected value="Student">Student</option>
-                    <option value="Engineer">Engineer</option>
-                    <option value="Developer">Developer</option>
-                    <option value="Business man">Business man</option>
+                    <option selected value="Available">Available</option>
+                    <option value="Busy">Busy</option>
+                    <option value="Sleeping">Sleeping</option>
+                    <option value="In the Gym">In the Gym</option>
                   </select>
-                  <label>Occupation</label>
+                  <label>Status</label>
                </div>
              
-           
+             
            
               </FormControl>
-              <ToastContainer />
+              
+              <input type="file"  accept="image/*" onChange={convertTobase64} name="file" id="" />
+              {image&&<img src={image} alt="" />}
     
           </Box>
           <div className="loginsubmit">
           <input className="submit" value="Submit" type="submit" />
         
           </div>
-          
+          <ToastContainer />
         </form>
         </LoginLayout>
    
