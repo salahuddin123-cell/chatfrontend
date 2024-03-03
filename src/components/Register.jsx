@@ -52,10 +52,13 @@ const Register = () => {
         toast("User email is required")
         }
       }
-    
+     if(err?.response?.status==413){
+      toast("Image size is too large ")
+      reset();
+     }
       else{
-        toast("Image size is too large ")
-        navigate('/login')
+        toast("There is an error ")
+       
         reset();
       }
     }
@@ -127,8 +130,8 @@ const Register = () => {
            
               </FormControl>
               
-              <input type="file"  accept="image/*" onChange={convertTobase64} name="file" id="" />
-              {image&&<img src={image} alt="" />}
+              {/* <input type="file"  accept="image/*" onChange={convertTobase64} name="file" id="" />
+              {image&&<img src={image} alt="" />} */}
     
           </Box>
           <div className="loginsubmit">
