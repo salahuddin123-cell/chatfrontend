@@ -89,7 +89,7 @@ const ChatuiPage = () => {
       }
        
     }).catch(error=>console.log(error))
-
+ 
    
   }, [calling]);
 
@@ -145,6 +145,7 @@ const ChatuiPage = () => {
  
   const leaveCall = () => {
 		setCallEnded(true)
+    socket.current.emit("callended", { from:id,to:idToCall })
     setcalling(false)
 		connectionRef.current.destroy()
 	}
@@ -180,6 +181,10 @@ const ChatuiPage = () => {
       setCallerSignal(data.signal);
       console.log('calluser',id)
     });
+    socket.current.on("callended", (data) => {
+      setcalling(false)
+		connectionRef.current.destroy()
+    }); 
  
   }, [socket.current])
 
