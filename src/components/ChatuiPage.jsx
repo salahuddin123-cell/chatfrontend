@@ -5,14 +5,12 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import CreateOutlinedIcon from "@mui/icons-material/CreateOutlined";
-import IconButton from "@material-ui/core/IconButton"
+
 import Button from "@material-ui/core/Button"
 import TextField from "@mui/material/TextField";
 import TextsmsIcon from "@mui/icons-material/Textsms";
 import CreateTwoToneIcon from "@mui/icons-material/CreateTwoTone";
-import AddAPhotoTwoToneIcon from "@mui/icons-material/AddAPhotoTwoTone";
-import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
+
 import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 import SendIcon from "@mui/icons-material/Send";
 import axios from "axios";
