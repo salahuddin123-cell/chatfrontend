@@ -470,7 +470,7 @@ const ChatuiPage = () => {
                 />
                  {receivingCall && !callAccepted ? (
                   <div className="caller">
-                    <h1>{name} is calling...</h1>
+                    <p>{name} is calling...</p>
                     <Button
                       variant="contained"
                       color="primary"

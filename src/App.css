@@ -412,7 +412,7 @@ style={{width:"20px",height:"20px", margin:"auto",display:"grid",placeItems:"cen
 
   }
   .secondiv>div:nth-child(1){
-    background-color:#1F1F1F ;
+    background-color:#ede3e389 ;
   }
   .form{
     width: 100%;
