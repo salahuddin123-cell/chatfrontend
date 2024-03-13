@@ -12,29 +12,33 @@ import { useNavigate } from "react-router-dom";
 import LoginLayout from "./LoginLayout";
 import { ToastContainer, toast } from 'react-toastify';
   import 'react-toastify/dist/ReactToastify.css';
+  import { storage } from '../firebase'
+import {ref,uploadBytes,getDownloadURL} from 'firebase/storage'
 
 const Register = () => {
   const { register, handleSubmit,reset } = useForm();
   const [image,setimage]=useState('')
   const navigate=useNavigate()
  
-  const convertTobase64=(e)=>{
+  const handleImageChange=(e)=>{
     
-    var reader=new FileReader();
-    reader.readAsDataURL(e.target.files[0])
-    reader.onload=()=>{
-      setimage(reader.result)
-    }
-    reader.onerror=(error)=>{
-      console.log(error)
-    }
+    const img=e.target.files[0]
+    if (img==null) return;
+    const imageRef=ref(storage,`images/${img.name}`)
+    uploadBytes(imageRef,img).then((snapshot)=>{
+      getDownloadURL(snapshot.ref).then(url=>{
+        console.log(url)
+        setimage(url)
+      })
+      
+    }) 
   }
 
 
   const onSubmit =async (data) => {
     try{
     const newdata={...data,image,Lastseen:new Date().getTime()}
-   const res=  await axios.post('https://chatappbackend-3ieq.onrender.com/register/new',newdata)
+   const res=  await axios.post('http://localhost:4001/register/new',newdata)
    
    if(res.status==201){
     localStorage.setItem("user",JSON.stringify(res.data.token))
@@ -130,8 +134,8 @@ const Register = () => {
            
               </FormControl>
               
-              {/* <input type="file"  accept="image/*" onChange={convertTobase64} name="file" id="" />
-              {image&&<img src={image} alt="" />} */}
+              <input type="file"  accept="image/*" onChange={handleImageChange} name="file" id="" />
+              {image&&<img src={image} alt="" />}
     
           </Box>
           <div className="loginsubmit">

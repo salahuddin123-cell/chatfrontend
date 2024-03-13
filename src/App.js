@@ -14,7 +14,7 @@ function App() {
    <Router>
      <Routes>
      <Route path='/' element={<Register />}/>
-     <Route path='/test' element={<Test />}/>
+     {/* <Route path='/test' element={<Test />}/> */}
      <Route path='/login' element={<Login />}/>
        <Route path='/chat' element={<ChatuiPage />}/>
       

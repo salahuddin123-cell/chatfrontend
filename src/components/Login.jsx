@@ -15,7 +15,7 @@ const Login = () => {
  
   const onSubmit =async (data) => {
     try{
-      const res=  await axios.post('https://chatappbackend-3ieq.onrender.com/login',data)
+      const res=  await axios.post('http://localhost:4001/login',data)
       if(res.status==200){
         console.log(res.data.user)
         localStorage.setItem("user",JSON.stringify(res.data.token))

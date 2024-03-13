@@ -1,3 +1,6 @@
+
+import Box from "@mui/material/Box";
+import Modal from "@mui/material/Modal";
 import Button from "@material-ui/core/Button"
 import IconButton from "@material-ui/core/IconButton"
 import TextField from "@material-ui/core/TextField"
@@ -8,10 +11,20 @@ import { CopyToClipboard } from "react-copy-to-clipboard"
 import Peer from "simple-peer"
 import io from "socket.io-client"
 
+const style = {
+  position: "absolute",
+  
+  left: "50%",
+  height:500,
 
-
+//   width: 500,
+ bgcolor: "background.paper",
+//   border: "2px solid #000",
+//   boxShadow: 24,
+//   p: 4,
+};
 const socket = io.connect('http://localhost:4001')
-function Test() {
+export default function CallModal({ open, handleClose, handleOpen, data,User }) {
 	const [ me, setMe ] = useState("")
 	const [ stream, setStream ] = useState()
 	const [ receivingCall, setReceivingCall ] = useState(false)
@@ -93,10 +106,17 @@ function Test() {
 		connectionRef.current.destroy()
 	}
 
-	return (
-		<>
-			<h1 style={{ textAlign: "center", color: '#fff' }}>Zoomish</h1>
-		<div className="container">
+
+  return (
+    
+          <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+        <div className="container">
 			<div className="video-container">
 				<div className="video">
 					{stream &&  <video playsInline muted ref={myVideo} autoPlay style={{ width: "300px" }} />}
@@ -153,8 +173,10 @@ function Test() {
 				) : null}
 			</div>
 		</div>
-		</>
-	)
+    
+      </Box>
+      </Modal>
+  
+    
+  );
 }
-
-export default Test
