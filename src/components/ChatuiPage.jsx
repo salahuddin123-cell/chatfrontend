@@ -498,7 +498,7 @@ const ChatuiPage = () => {
                    <p>My video</p>
                     <video
                       playsInline
-                      muted
+                     
                       ref={myVideo}
                       autoPlay
                       style={{ width: "300px" }}
@@ -512,7 +512,7 @@ const ChatuiPage = () => {
                       playsInline
                       ref={userVideo}
                       autoPlay
-                      muted
+                    
                       style={{ width: "300px" }}
                     />
                   
