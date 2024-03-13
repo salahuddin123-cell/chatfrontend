@@ -148,6 +148,7 @@ const ChatuiPage = () => {
     socket.current.emit("callended", { from:id,to:idToCall })
     setcalling(false)
 		connectionRef.current.destroy()
+    setStream('')
 	}
 
 
