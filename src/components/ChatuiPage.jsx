@@ -145,7 +145,7 @@ const ChatuiPage = () => {
  
   const leaveCall = () => {
 		setCallEnded(true)
-    socket.current.emit("callended", { from:id,to:idToCall })
+    socket.current.emit("callended", { from:id,to:me })
     setcalling(false)
     setCallAccepted(false) 
     setReceivingCall(false)
