@@ -85,6 +85,7 @@ const ChatuiPage = () => {
       setStream(currentStream);
       console.log(currentStream)
       if(calling){
+        
         myVideo.current.srcObject = currentStream;
       }
        
@@ -150,7 +151,7 @@ const ChatuiPage = () => {
     setCallAccepted(false) 
     setReceivingCall(false)
     
-		connectionRef.current.destroy()
+		// connectionRef.current.destroy()
     
 	}
 
@@ -186,11 +187,12 @@ const ChatuiPage = () => {
       console.log('calluser',id)
     });
     socket.current.on("callended", (data) => {
+      setCallEnded(true)
       setcalling(false)
       setCallAccepted(false) 
       setReceivingCall(false)
       
-		connectionRef.current.destroy()
+
     console.log('call ended')
    
     
@@ -530,7 +532,7 @@ const ChatuiPage = () => {
               </div>
               <div className="call-button">
 					{callAccepted &&   
-						<Button variant="contained" color="secondary" onClick={leaveCall}>
+						<Button variant="contained" color="secondary" onClick={()=>leaveCall()}>
 							End Call
 						</Button>
 			}
