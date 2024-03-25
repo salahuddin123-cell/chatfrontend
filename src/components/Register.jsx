@@ -17,10 +17,11 @@ import {ref,uploadBytes,getDownloadURL} from 'firebase/storage'
 const Register = () => {
   const { register, handleSubmit,reset } = useForm();
   const [image,setimage]=useState('')
+  const [loading, setloading] = useState(false)
   const navigate=useNavigate()
  
   const handleImageChange=(e)=>{
-    
+    setloading(true)
     const img=e.target.files[0]
     if (img==null) return;
     const imageRef=ref(storage,`images/${img.name}`)
@@ -28,6 +29,7 @@ const Register = () => {
       getDownloadURL(snapshot.ref).then(url=>{
         console.log(url)
         setimage(url)
+        setloading(false)
       })
       
     }) 
@@ -136,7 +138,8 @@ const Register = () => {
               
               <input type="file"  accept="image/*" onChange={handleImageChange} name="file" id="" />
               
-              {image?<img className="regimg" src={image} alt="" />: <Spinner animation="border" />}
+              {image&&<img className="regimg" src={image} alt="" />}
+              {loading&& !image&& <Spinner animation="grow" style={{width:'17px'}} size="sm" />}
     
           </Box>
           <div className="loginsubmit">
