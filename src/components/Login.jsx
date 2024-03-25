@@ -72,11 +72,13 @@ const Login = () => {
               label="Email"
               variant="outlined"
               size="small"
+              type="email"
             />
             <TextField
               id="filled-basic"
               {...register("Password")}
               label="Password"
+              type="password"
               variant="outlined"
               size="small"
             />

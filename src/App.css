@@ -205,6 +205,11 @@ margin-right:  1rem;
   cursor: pointer;
 }
 
+.regimg{
+  width: 200px;
+  height: 200px;
+}
+
 /* chatui */
 .main{
   display: grid;

@@ -10,13 +10,13 @@ import Button from "@material-ui/core/Button"
 import TextField from "@mui/material/TextField";
 import TextsmsIcon from "@mui/icons-material/Textsms";
 import CreateTwoToneIcon from "@mui/icons-material/CreateTwoTone";
-
+import Spinner from 'react-bootstrap/Spinner';
 import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 import SendIcon from "@mui/icons-material/Send";
 import axios from "axios";
 import moment from "moment";
 import EmojiPicker from "emoji-picker-react";
-import { Emoji, EmojiStyle } from "emoji-picker-react";
+
 import Avatar from "@mui/material/Avatar";
 import { deepOrange, deepPurple } from "@mui/material/colors";
 import io from "socket.io-client";
@@ -30,7 +30,7 @@ import Peer from "simple-peer"
 
 const ChatuiPage = () => {
   const [users, setusers] = useState(null);
-  const [modalState, setmodalState] = useState({ open: false });
+
 
   const [sender, setsender] = useState(() => {
     const savedItem = JSON.parse(localStorage.getItem("user"));
@@ -83,7 +83,7 @@ const ChatuiPage = () => {
     navigator.mediaDevices?.getUserMedia({ video: true, audio: true })
     .then((currentStream) => {
       setStream(currentStream);
-      console.log(currentStream)
+      //console.log(currentStream)
       if(calling){
         
         myVideo.current.srcObject = currentStream;
@@ -150,6 +150,7 @@ const ChatuiPage = () => {
     setcalling(false)
     setCallAccepted(false) 
     setReceivingCall(false)
+   
     
 		// connectionRef.current.destroy()
     
@@ -184,16 +185,16 @@ const ChatuiPage = () => {
       setCaller(data.from);
       setName(data.name);
       setCallerSignal(data.signal);
-      console.log('calluser',id)
+      //console.log('calluser',id)
     });
     socket.current.on("callended", (data) => {
       setCallEnded(true)
       setcalling(false)
       setCallAccepted(false) 
       setReceivingCall(false)
-      
+      window.document.reload()
 
-    console.log('call ended')
+  
    
     
     }); 
@@ -208,7 +209,7 @@ const ChatuiPage = () => {
             data,
           });
           if (res.status == 200) {
-            console.log(data);
+            console.log('leave');
           }
         } catch (err) {
           console.log(err);
@@ -222,7 +223,7 @@ const ChatuiPage = () => {
   }, [socket.current]);
 
   useEffect(() => {
-    console.log(sender.Name, reciever.Name);
+   // console.log(sender.Name, reciever.Name);
 
     socket.current.on("connect", () => {
       setid(socket.current.id);
@@ -237,7 +238,7 @@ const ChatuiPage = () => {
     socket.current.on("member", (data) => {
       setonlineusers(data.users2);
       (data.users2).forEach((el)=>{
-        console.log(el.user,reciever.Name)
+        //console.log(el.user,reciever.Name)
         if(el.user==reciever.Name){
           setIdToCall(el.id)
         }
@@ -253,7 +254,7 @@ const ChatuiPage = () => {
   useEffect(() => {
     socket.current.on("notify", (data) => {
       setnotified((prev) => [...prev, data]);
-      console.log(data);
+    //  console.log(data);
     });
 
     return () => {
@@ -266,21 +267,25 @@ const ChatuiPage = () => {
       setmessages([...messages, data]);
       setmsgsent(!msgsent);
 
-      console.log(messages);
+      //console.log(messages);
     });
   }, [msgsent, messages, msg]);
 
   useEffect(() => {
-    fetch("https://chatappbackend-3ieq.onrender.com/chat/all", {
-      method: "get",
-    })
-      .then((data) => data.json())
-      .then((res) => {
-        let filtered = res.filter((e) => e.room == me);
+const fetchchats=async()=>{
 
-        setmessages(res);
-      });
-  }, [reciever.Name]);
+  try {
+    const res=await axios.post("https://chatappbackend-3ieq.onrender.com/chat/all", {room:me})
+   //console.log(res.data)
+    setmessages(res.data);
+  
+  } catch (error) {
+    console.log(error)
+  }
+}
+ fetchchats()   
+   
+  }, [reciever]);
 
   const checkonline = useCallback(
     (name) => {
@@ -316,7 +321,7 @@ const ChatuiPage = () => {
   const clearnotified = (name) => {
     const item = notified.filter((e) => e.user !== name);
     setnotified(item);
-    console.log(item);
+    //console.log(item);
   };
 
   const send = (e) => {
@@ -410,7 +415,7 @@ const ChatuiPage = () => {
           />
 
           <div>
-            {filtered?.map((elem) => {
+            {filtered?filtered.map((elem) => {
               return (
                 <div className="user">
                   <div>
@@ -450,7 +455,7 @@ const ChatuiPage = () => {
                   </div>
                 </div>
               );
-            })}
+            }):<Spinner animation="border" />}
           </div>
         </div>
         <div className="secondiv">
@@ -507,7 +512,7 @@ const ChatuiPage = () => {
             <div className="container">
               <div className="video-container">
               {myVideo  ?  <div className="video" >
-                   <p>My video</p>
+                   
                     <video
                       playsInline
                      
@@ -519,7 +524,7 @@ const ChatuiPage = () => {
                 </div>:'no video'}
                 {callAccepted && userVideo  &&
                 <div className="video">
-                   <p>his video</p>
+                  
                     <video
                       playsInline
                       ref={userVideo}
@@ -542,9 +547,7 @@ const ChatuiPage = () => {
             </div>
           ) : (
             <div className="messages">
-              {messages
-                .filter((e) => e.me == me)
-                .map((elem) => {
+              {messages?.map((elem) => {
                   return (
                     <div
                       className={elem.user == sender.Name ? "right" : "left"}

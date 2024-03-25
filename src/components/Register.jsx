@@ -2,11 +2,10 @@ import React ,{useContext, useState}from "react";
 import { useForm } from "react-hook-form";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
+
 import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import { Link } from 'react-router-dom'
+
+import Spinner from 'react-bootstrap/Spinner';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import LoginLayout from "./LoginLayout";
@@ -45,9 +44,9 @@ const Register = () => {
     navigate('/chat')
    }
    else Promise.reject()
-   console.log(res.status)
+  
     }catch(err){
-      console.log(err.response?.data?.error?.code)
+      // console.log(err.response?.data?.error?.code)
      
       if(err?.response?.status==403){
         if(err.response?.data?.error?.code==11000){
@@ -112,6 +111,7 @@ const Register = () => {
               id="filled-basic"
               {...register("Password")}
               label="Password"
+              type="password"
               variant="outlined"
               size="small"
             />
@@ -135,7 +135,8 @@ const Register = () => {
               </FormControl>
               
               <input type="file"  accept="image/*" onChange={handleImageChange} name="file" id="" />
-              {image&&<img src={image} alt="" />}
+              
+              {image?<img className="regimg" src={image} alt="" />: <Spinner animation="border" />}
     
           </Box>
           <div className="loginsubmit">
