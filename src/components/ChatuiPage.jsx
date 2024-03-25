@@ -52,7 +52,7 @@ const ChatuiPage = () => {
   const [onlineusers, setonlineusers] = useState([]);
   const [notified, setnotified] = useState([]);
   const [emojipicked, setemojipicked] = useState(false);
-  const [filtered, setfiltered] = useState([]);
+  const [filtered, setfiltered] = useState();
   const [searchval, setsearchval] = useState("");
   const navigate = useNavigate();
   let me = (sender.Name + reciever.Name).split("").sort().join(",");
