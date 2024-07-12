@@ -71,7 +71,7 @@ const ChatuiPage = () => {
   const connectionRef = useRef();
 
   useEffect(() => {
-    socket.current = io.connect("https://chatappbackend-3ieq.onrender.com");
+    socket.current = io.connect("https://chatbackend-n9y2.onrender.com");
     return () => {
       socket.current.disconnect();
     };
@@ -205,7 +205,7 @@ const ChatuiPage = () => {
     socket.current.on("leave", (data) => {
       const senddata = async () => {
         try {
-          const res = await axios.post("https://chatappbackend-3ieq.onrender.com/user/lsupdate", {
+          const res = await axios.post("https://chatbackend-n9y2.onrender.com/user/lsupdate", {
             data,
           });
           if (res.status == 200) {
@@ -275,7 +275,7 @@ const ChatuiPage = () => {
 const fetchchats=async()=>{
 
   try {
-    const res=await axios.post("https://chatappbackend-3ieq.onrender.com/chat/all", {room:me})
+    const res=await axios.post("https://chatbackend-n9y2.onrender.com/chat/all", {room:me})
    //console.log(res.data)
     setmessages(res.data);
   
@@ -368,13 +368,17 @@ const fetchchats=async()=>{
   useEffect(() => {
     const fetchdata = async () => {
       try {
-        const res = await axios.get("https://chatappbackend-3ieq.onrender.com/user/all");
+        const res = await axios.get("https://chatbackend-n9y2.onrender.com/user/all")
         if (res.status == 200) {
           setusers(res.data);
         }
+        if (res.status == 404) {
+          console.log('5')
+         
+        }
       } catch (err) {
-        localStorage.removeItem("user");
-        navigate("/login");
+        console.log('4')
+       
       }
     };
     fetchdata();
