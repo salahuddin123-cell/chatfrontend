@@ -15,7 +15,7 @@ const Login = () => {
  
   const onSubmit =async (data) => {
     try{
-      const res=  await axios.post('https://chatbackend-n9y2.onrender.com/login',data)
+      const res=  await axios.post('http://localhost:4001/login',data)
       if(res.status==200){
         console.log(res.data.user)
         localStorage.setItem("user",JSON.stringify(res.data.token))
@@ -36,10 +36,31 @@ const Login = () => {
         console.log(err.response)
       }
     }
-   
+   }
+   const dummylogin=async()=>{
+    try{
+      const res=  await axios.post('http://localhost:4001/login',{Email:'hr@gmail.com',Password:'123456'})
+      if(res.status==200){
+        console.log(res.data.user)
+        localStorage.setItem("user",JSON.stringify(res.data.token))
+        navigate('/chat')
+      }
+      else{
+       
+        Promise.reject()
+      }
     
- 
-  }
+    }catch(err){
+      if(err.response.status==400){
+        toast("Invalid credential")
+      }
+      if(err.response.status==403){
+        toast("Pssword does not match")
+      }else{
+        console.log(err.response)
+      }
+    }
+   }
   return (
     <>
     <LoginLayout>
@@ -92,7 +113,7 @@ const Login = () => {
           </div>
           
         </form>
-      
+      <p>For dummy login <button onClick={dummylogin}>click here</button></p>
 
     </LoginLayout>
     </>

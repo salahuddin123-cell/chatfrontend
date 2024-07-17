@@ -210,6 +210,17 @@ margin-right:  1rem;
   height: 200px;
 }
 
+::-webkit-file-upload-button {
+    display: none;
+ }
+.file{
+  width: .1px;
+  height: .1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
 /* chatui */
 .main{
   display: grid;
@@ -361,6 +372,8 @@ style={{width:"20px",height:"20px", margin:"auto",display:"grid",placeItems:"cen
 }
 .oc{
   font-size: 12px;
+  margin-left: 10px;
+  color: rgb(114, 6, 94);
 }
 .ls{
  transform: translateY(6px);

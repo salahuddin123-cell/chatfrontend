@@ -1,0 +1,31 @@
+/* MultiSelectPopover.css */
+.popover {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .popover-content {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+  .popover-content h3 {
+    font-size: 16px;
+  }
+  
+  .popover-content ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .popover-content li {
+    margin-bottom: 5px;
+  }
+  
+  .popover-content button {
+    margin-top: 10px;
+  }
+  

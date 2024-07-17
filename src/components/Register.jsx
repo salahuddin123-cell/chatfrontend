@@ -16,30 +16,37 @@ import {ref,uploadBytes,getDownloadURL} from 'firebase/storage'
 
 const Register = () => {
   const { register, handleSubmit,reset } = useForm();
+  const [img, setimg] = useState()
   const [image,setimage]=useState('')
   const [loading, setloading] = useState(false)
   const navigate=useNavigate()
  
   const handleImageChange=(e)=>{
     setloading(true)
-    const img=e.target.files[0]
-    if (img==null) return;
-    const imageRef=ref(storage,`images/${img.name}`)
-    uploadBytes(imageRef,img).then((snapshot)=>{
-      getDownloadURL(snapshot.ref).then(url=>{
-        console.log(url)
-        setimage(url)
-        setloading(false)
-      })
-      
-    }) 
+   setimg(e.target.files[0])
+   
   }
 
 
   const onSubmit =async (data) => {
+   
     try{
-    const newdata={...data,image,Lastseen:new Date().getTime()}
-   const res=  await axios.post('https://chatbackend-n9y2.onrender.com/register/new',newdata)
+     if(img){
+      const imageRef=ref(storage,`images/${img.name}`)
+      await uploadBytes(imageRef,img).then((snapshot)=>{
+        getDownloadURL(snapshot.ref).then(url=>{
+          console.log(url)
+         
+          setimage(url)
+          setloading(false) 
+        })
+        
+      }) 
+     }
+    
+    let newdata= {...data,image:image,Lastseen:new Date().getTime()}
+   
+   const res=  await axios.post('http://localhost:4001/register/new',newdata)
    
    if(res.status==201){
     localStorage.setItem("user",JSON.stringify(res.data.token))
@@ -138,8 +145,8 @@ const Register = () => {
               
               <input type="file"  accept="image/*" onChange={handleImageChange} name="file" id="" />
               
-              {image&&<img className="regimg" src={image} alt="" />}
-              {loading&& !image&& <Spinner animation="grow" style={{width:'17px'}} size="sm" />}
+              {/* {image&&<img className="regimg" src={image} alt="" />}
+              {loading&& !image&& <Spinner animation="grow" style={{width:'17px'}} size="sm" />} */}
     
           </Box>
           <div className="loginsubmit">

@@ -16,21 +16,171 @@ import SendIcon from "@mui/icons-material/Send";
 import axios from "axios";
 import moment from "moment";
 import EmojiPicker from "emoji-picker-react";
-
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import Avatar from "@mui/material/Avatar";
 import { deepOrange, deepPurple } from "@mui/material/colors";
 import io from "socket.io-client";
 import LogoutIcon from "@mui/icons-material/Logout";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Tooltip from '@mui/material/Tooltip';
 import { useNavigate } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import VideoCallIcon from "@mui/icons-material/VideoCall";
+import CancelIcon from '@mui/icons-material/Cancel';
 import CallModal from "./modal/CallModal";
 import Peer from "simple-peer"
+import { storage } from '../firebase'
+import {ref,uploadBytes,getDownloadURL} from 'firebase/storage'
 //calling function
+
+// MultiSelectPopover.js
+
+import './MultiSelectPopover.css'; // Import CSS for styling (optional)
+import { useStepContext } from "@mui/material";
+
+const MultiSelectPopover = ({ options, onSelect,sender,onClose }) => {
+  const [selectedOptions, setSelectedOptions] = useState([]);
+
+  const[gname,setgname]=useState()
+  const [err,seterr]=useState(false)
+  const popoverRef = useRef(null);
+
+useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popoverRef.current && !popoverRef.current.contains(event.target)) {
+        console.log('close')
+        onClose();
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [onClose]);
+
+  const toggleOption = (option) => {
+    if (selectedOptions.includes(option)) {
+      setSelectedOptions(selectedOptions.filter(item => item.Name !== option.Name));
+    } else {
+      setSelectedOptions([...selectedOptions, option]);
+    }
+  };
+
+  const handleApply = async() => {
+    if(!gname){
+      seterr(true)
+      return
+    }
+    if(selectedOptions.length==0){
+      return
+    }
+    onSelect(selectedOptions);
+    let users=selectedOptions.map(e=>e.Name)
+    let ids=selectedOptions.map(e=>e._id)
+    let new_users=[...users,sender.Name]
+    let new_ids=[...ids,sender._id]
+    console.log(gname,selectedOptions)
+    try {
+      await axios.post('http://localhost:4001/creategroup',{Name:gname,ids:new_ids,users:new_users})
+    } catch (error) {
+      console.log(error)
+    }
+    // You can close the popover or do other actions upon apply
+  };
+
+  return (
+    <div className="popover"> 
+      <div className="popover-content">
+        <input type="text" value={gname} placeholder=" group name"  onChange={(e)=>{setgname(e.target.value);seterr(false)}} />
+        {err&& <p style={{color:"red",fontSize:"10px",marginBottom:'0'}}>Group name is mandatory</p>}
+        <h3>add users</h3>
+        <ul>
+          {options.filter(e=>e.Name!=sender.Name).map(option => (
+            <li key={option}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={selectedOptions.includes(option)}
+                  onChange={() => toggleOption(option)}
+                />
+                {option.Name}
+              </label>
+            </li>
+          ))}
+        </ul>
+        <div style={{display:'flex',justifyContent:"space-between",padding:"5px"}}>
+      <button style={{boder:'none',background:"black",color:"white"}} onClick={handleApply}>Apply</button>
+        <CancelIcon onClick={onClose} />
+        </div>
+       
+
+      </div>
+    </div>
+  );
+};
+const MultiSelectPopover2 = ({  setsender,sender,onClose }) => {
+
+
+  const[name,setname]=useState(sender.Name)
+  const[status,setstatus]=useState(sender.Occupation)
+  const [err,seterr]=useState(false)
+
+
+
+
+
+
+
+  const handleApply = async() => {
+  if(!name|!status){
+    seterr(true)
+    return
+  }
+   try {
+    const res=await axios.post(`http://localhost:4001/userupdate/${sender._id}`,{Name:name,status:status})
+    
+    if(res.status==201){
+      setsender({...sender,Name:name,Occupation:status})
+      onClose()
+    }
+   } catch (error) {
+    console.log(error)
+   }
+  };
+
+  return (
+    <div className="popover"> 
+      <div className="popover-content">
+ 
+        <p style={{fontSize:"12px",marginBottom:'0'}}> status </p>
+        <select  value={status} onChange={(e)=>{setstatus(e.target.value);seterr(false)}} >
+        <option selected value="Available">Available</option>
+                    <option value="Busy">Busy</option>
+                    <option value="Sleeping">Sleeping</option>
+                    <option value="In the Gym">In the Gym</option>
+        </select>
+       
+        <div style={{display:'flex',justifyContent:"space-between",padding:"5px"}}>
+        {err&& <p style={{color:"red",fontSize:"10px",marginBottom:'0'}}> This field is mandatory</p>}
+      <button style={{boder:'none',background:"black",color:"white"}} onClick={handleApply}>update</button>
+        <CancelIcon onClick={onClose} />
+        </div>
+       
+
+      </div>
+    </div>
+  );
+};
+
 
 const ChatuiPage = () => {
   const [users, setusers] = useState(null);
-
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [isPopoverOpen2, setIsPopoverOpen2] = useState(false);
 
   const [sender, setsender] = useState(() => {
     const savedItem = JSON.parse(localStorage.getItem("user"));
@@ -47,6 +197,7 @@ const ChatuiPage = () => {
     window.matchMedia("(min-width:768px)").matches
   );
   const [msg, setmsg] = useState("");
+  const [group,setgroup]=useState(null)
   const [msgsent, setmsgsent] = useState(false);
   const [messages, setmessages] = useState([]);
   const [onlineusers, setonlineusers] = useState([]);
@@ -54,8 +205,10 @@ const ChatuiPage = () => {
   const [emojipicked, setemojipicked] = useState(false);
   const [filtered, setfiltered] = useState();
   const [searchval, setsearchval] = useState("");
+  const[ groups,setgroups]=useState([])
   const navigate = useNavigate();
-  let me = (sender.Name + reciever.Name).split("").sort().join(",");
+  
+   let me = group?group.Name:(sender.Name + reciever.Name).split("").sort().join(",");
   //calling state
   const [calling, setcalling] = useState(false);
   const [stream, setStream] = useState('');
@@ -65,96 +218,105 @@ const ChatuiPage = () => {
   const [callAccepted, setCallAccepted] = useState(false);
   const [idToCall, setIdToCall] = useState("");
   const [callEnded, setCallEnded] = useState(false);
+  const [leavegrp, setleavegrp] = useState(false)
   const [name, setName] = useState("");
+  const [options, setoptions] = useState([])
   const myVideo = useRef({ srcObject: null });
   const userVideo = useRef();
   const connectionRef = useRef();
+ const [loading,setloading]=useState(true)
+ // const options = ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
+
+  const handleSelect = (options) => {
+    setSelectedOptions(options);
+    setIsPopoverOpen(false);
+  };
 
   useEffect(() => {
-    socket.current = io.connect("https://chatbackend-n9y2.onrender.com");
+    socket.current = io.connect("http://localhost:4001");
     return () => {
       socket.current.disconnect();
     };
   }, [reciever.Name]);
 
   //calling function
-  useEffect(() => {
+  // useEffect(() => {
    
-    navigator.mediaDevices?.getUserMedia({ video: true, audio: true })
-    .then((currentStream) => {
-      setStream(currentStream);
-      //console.log(currentStream)
-      if(calling){
+  //   navigator.mediaDevices?.getUserMedia({ video: true, audio: true })
+  //   .then((currentStream) => {
+  //     setStream(currentStream);
+  //     //console.log(currentStream)
+  //     if(calling){
         
-        myVideo.current.srcObject = currentStream;
-      }
+  //       myVideo.current.srcObject = currentStream;
+  //     }
        
-    }).catch(error=>console.log(error))
+  //   }).catch(error=>console.log(error))
  
    
-  }, [calling]);
+  // }, [calling]);
 
 
-  const callUser = (ids) => {
-		const peer = new Peer({
-			initiator: true,
-			trickle: false,
-			stream: stream
-		})
-		peer.on("signal", (data) => {
-			socket.current.emit("callUser", {
-				userToCall: ids,
-				signalData: data,
-				from: id,
-				name: sender.Name
-			})
-		})
-		peer.on("stream", (streamm) => {
+  // const callUser = (ids) => {
+	// 	const peer = new Peer({
+	// 		initiator: true,
+	// 		trickle: false,
+	// 		stream: stream
+	// 	})
+	// 	peer.on("signal", (data) => {
+	// 		socket.current.emit("callUser", {
+	// 			userToCall: ids,
+	// 			signalData: data,
+	// 			from: id,
+	// 			name: sender.Name
+	// 		})
+	// 	})
+	// 	peer.on("stream", (streamm) => {
 			
-				userVideo.current.srcObject = streamm
-        userVideo.current.play()
+	// 			userVideo.current.srcObject = streamm
+  //       userVideo.current.play()
 			
-		})
-		socket.current.on("callAccepted", (signal) => {
-			setCallAccepted(true)
-			peer.signal(signal)
-		})
+	// 	})
+	// 	socket.current.on("callAccepted", (signal) => {
+	// 		setCallAccepted(true)
+	// 		peer.signal(signal)
+	// 	})
 
-		connectionRef.current = peer
-	} 
+	// 	connectionRef.current = peer
+	// } 
 
-  const answerCall =() =>  {
-		setCallAccepted(true)
-    setcalling(true)
-		const peer = new Peer({
-			initiator: false,
-			trickle: false,
-			stream: stream
-		})
-		peer.on("signal", (data) => {
-			socket.current.emit("answerCall", { signal: data, to: caller })
-		})
-		peer.on("stream", (streamm) => {
-			userVideo.current.srcObject = streamm
-      userVideo.current.play()
-		})
+  // const answerCall =() =>  {
+	// 	setCallAccepted(true)
+  //   setcalling(true)
+	// 	const peer = new Peer({
+	// 		initiator: false,
+	// 		trickle: false,
+	// 		stream: stream
+	// 	})
+	// 	peer.on("signal", (data) => {
+	// 		socket.current.emit("answerCall", { signal: data, to: caller })
+	// 	})
+	// 	peer.on("stream", (streamm) => {
+	// 		userVideo.current.srcObject = streamm
+  //     userVideo.current.play()
+	// 	})
 
-		peer.signal(callerSignal)
-    connectionRef.current = peer
+	// 	peer.signal(callerSignal)
+  //   connectionRef.current = peer
 		
-	}
+	// }
  
-  const leaveCall = () => {
-		setCallEnded(true)
-    socket.current.emit("callended", { from:id,to:me })
-    setcalling(false)
-    setCallAccepted(false) 
-    setReceivingCall(false)
+  // const leaveCall = () => {
+	// 	setCallEnded(true)
+  //   socket.current.emit("callended", { from:id,to:me })
+  //   setcalling(false)
+  //   setCallAccepted(false) 
+  //   setReceivingCall(false)
    
     
-		// connectionRef.current.destroy()
+	// 	// connectionRef.current.destroy()
     
-	}
+	// }
 
 
   // const handleOpen = () => {
@@ -205,7 +367,7 @@ const ChatuiPage = () => {
     socket.current.on("leave", (data) => {
       const senddata = async () => {
         try {
-          const res = await axios.post("https://chatbackend-n9y2.onrender.com/user/lsupdate", {
+          const res = await axios.post("http://localhost:4001/user/lsupdate", {
             data,
           });
           if (res.status == 200) {
@@ -275,7 +437,7 @@ const ChatuiPage = () => {
 const fetchchats=async()=>{
 
   try {
-    const res=await axios.post("https://chatbackend-n9y2.onrender.com/chat/all", {room:me})
+    const res=await axios.post("http://localhost:4001/chat/all", {room:me})
    //console.log(res.data)
     setmessages(res.data);
   
@@ -286,6 +448,22 @@ const fetchchats=async()=>{
  fetchchats()   
    
   }, [reciever]);
+
+  useEffect(() => {
+    const fetchchats=async()=>{
+    
+      try {
+        const res=await axios.post("http://localhost:4001/getgroup", {_id:sender._id})
+      // console.log(res.data)
+        setgroups(res.data);
+      
+      } catch (error) {
+        console.log(error)
+      }
+    }
+     fetchchats()   
+       
+      }, [sender,isPopoverOpen,leavegrp]);
 
   const checkonline = useCallback(
     (name) => {
@@ -301,6 +479,20 @@ const fetchchats=async()=>{
   const checknewmsg = useCallback(
     (name) => {
       const notify = notified.find((e) => e.user == name);
+      const isnotgrp=notified.some((e) => e.me == name);
+      console.log(isnotgrp,notified,name)
+
+      if ( !isnotgrp && notify && name != reciever.Name ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    [notified, sender.Name]
+  );
+  const checknewmsggrp = useCallback(
+    (name) => {
+      const notify = notified.find((e) => e.me == name);
 
       if (notify && name != reciever.Name) {
         return true;
@@ -319,10 +511,20 @@ const fetchchats=async()=>{
   }, []);
 
   const clearnotified = (name) => {
-    const item = notified.filter((e) => e.user !== name);
+    const item = notified.filter((e) => e.me !== name);
     setnotified(item);
     //console.log(item);
   };
+  const leavegroup=async(elem)=>{
+    let new_users=(elem.users).filter(e=>e!=sender.Name)
+    let new_ids=(elem.ids).filter(e=>e!=sender._id)
+    try {
+      await axios.post('http://localhost:4001/groupupdate',{Name:elem.Name,users:new_users,ids:new_ids})
+      .then(data=>setleavegrp(!leavegrp))
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const send = (e) => {
     if (!msg.length > 0) {
@@ -334,6 +536,7 @@ const fetchchats=async()=>{
         id,
         me,
         time,
+        image:null,
         reciever: reciever.Name,
       });
 
@@ -368,9 +571,10 @@ const fetchchats=async()=>{
   useEffect(() => {
     const fetchdata = async () => {
       try {
-        const res = await axios.get("https://chatbackend-n9y2.onrender.com/user/all")
+        const res = await axios.get("http://localhost:4001/user/all")
         if (res.status == 200) {
           setusers(res.data);
+          setoptions(res.data)
         }
         if (res.status == 404) {
           console.log('5')
@@ -383,11 +587,65 @@ const fetchchats=async()=>{
     };
     fetchdata();
   }, []);
+  const handleClosePopover = () => {
+    setIsPopoverOpen(false);
+  };
+  const handleClosePopover2 = () => {
+    setIsPopoverOpen2(false);
+  };
+const deleteUser=async()=>{
+ try {
+ const res= await axios.post(`http://localhost:4001/deleteuser/${sender._id}`)
+  if(res.status==201){
+    alert('your account has been deleted succesfuly')
+    navigate('/login')
+  }
+ } catch (error) {
+  console.log(error)
+ }
+}
+const handleImageChange=async(e)=>{
 
+ let img=e.target.files[0]
+ try {
+  setloading(true)
+  if(img){
+    const imageRef=ref(storage,`images/${img.name}`)
+    await uploadBytes(imageRef,img).then((snapshot)=>{
+      getDownloadURL(snapshot.ref).then(url=>{
+      
+      
+    if(url){
+          let time = new Date().getTime();
+          socket.current.emit("message", {
+            msg:url,
+            id,
+            me,
+            image:url,
+            time,
+            reciever: reciever.Name,
+          })}
+  
+          setloading(false)
+          setmsg("");
+          setemojipicked(false);
+           
+  
+      })
+      
+    }) 
+
+  
+   }
+ } catch (error) {
+  
+ }
+ 
+}
   return (
     <div className="main">
-      <div className="chatui">
-        <div className="fisrtdiv">
+      <div className="chatui" >
+        <div className="fisrtdiv" >
           <div>
             <div>
               {/* <Avatar sx={{ bgcolor: deepOrange[500] }}>{sender?.Name[0]}</Avatar> */}
@@ -404,10 +662,25 @@ const fetchchats=async()=>{
               <p>{sender.Occupation}</p>
             </div>
             <div>
-              <LogoutIcon onClick={handlelogout} />
+              
+              {/* <Tooltip title="edit detail"><EditIcon /></Tooltip> */}
+              <Tooltip title="update status" placement="top" onClick={()=>setIsPopoverOpen2(!isPopoverOpen2)}>
+              <EditIcon />
+          </Tooltip>
+          <Tooltip title="delete account" placement="top-end">
+            <DeleteIcon onClick={deleteUser}/>
+          </Tooltip>
+             <Tooltip title="logout"><LogoutIcon onClick={handlelogout} style={{marginLeft:"20px"}}/></Tooltip> 
             </div>
+            {isPopoverOpen2 && (
+        <MultiSelectPopover2
+         
+          sender={sender}
+          onClose={handleClosePopover2}
+          setsender={setsender}
+        /> )}
           </div>
-
+       
           <TextField
             placeholder="search user"
             size="small"
@@ -418,7 +691,59 @@ const fetchchats=async()=>{
             focused
           />
 
+
           <div>
+            <p>Groups <a style={{marginLeft:"40px"}}>
+            <button style={{border:"none"}} onClick={() => setIsPopoverOpen(!isPopoverOpen)}>create group</button>
+      {isPopoverOpen && (
+        <MultiSelectPopover
+          options={options}
+          sender={sender}
+          onClose={handleClosePopover}
+          onSelect={handleSelect}
+        /> )}
+              </a>
+              
+              </p>
+          {
+            groups?.map(elem=>{
+              return (
+                <div className="user">
+                <div>
+                
+                    <Avatar sx={{ bgcolor: deepOrange[500] }}>
+                      {elem.Name[0]}
+                    </Avatar>
+                  
+                </div>
+                <div
+                  className={elem._id == reciever._id ? "active" : "inactive"}
+                >
+                  <b 
+                    onClick={() => {
+                      setreciever(elem);
+                      clearnotified(elem.Name);
+                      setgroup(elem)
+                    }}
+                    style={{ cursor: "pointer" ,fontSize:"14px"}}
+                  >
+                    {elem.Name}
+                  </b>
+
+                </div>
+                <div className="notification">
+                  {checknewmsggrp(elem.Name) && (
+                    <TextsmsIcon sx={{ color: "blue" }} />
+                  )}
+
+                 
+                </div>
+                <button style={{border:"none"}} onClick={()=>leavegroup(elem)}>leave</button>
+              </div>
+              )
+            })
+           }
+           <p>users</p>
             {filtered?filtered.map((elem) => {
               return (
                 <div className="user">
@@ -438,6 +763,7 @@ const fetchchats=async()=>{
                       onClick={() => {
                         setreciever(elem);
                         clearnotified(elem.Name);
+                        setgroup(null)
                       }}
                       style={{ cursor: "pointer" }}
                     >
@@ -451,7 +777,7 @@ const fetchchats=async()=>{
                     )}
                   </div>
                   <div className="notification">
-                    {checknewmsg(elem.Name) && (
+                    {!group && checknewmsg(elem.Name) && (
                       <TextsmsIcon sx={{ color: "blue" }} />
                     )}
 
@@ -463,7 +789,9 @@ const fetchchats=async()=>{
           </div>
         </div>
         <div className="secondiv">
+        {reciever.Name!='You'&&
           <div>
+            
             <div>
               <div>
                 {/* <Avatar sx={{ bgcolor: deepOrange[500] }}>{reciever?.Name[0]}</Avatar> */}
@@ -472,12 +800,12 @@ const fetchchats=async()=>{
                 )}
               </div>
               <div className="notification">
-                {reciever.Occupation && (
+                
                   <b style={{ color: "blue" }}>
-                    {reciever?.Name}(
-                    <small className="oc">{reciever.Occupation}</small>)
+                    {reciever?.Name}
+                      {reciever.Occupation && (   <small className="oc">{reciever.Occupation}</small>) }
                   </b>
-                )}
+               
                 {checkonline(reciever?.Name) && <p className="online"></p>}
 
                 {reciever.Occupation && !checkonline(reciever.Name) && (
@@ -486,10 +814,10 @@ const fetchchats=async()=>{
                   </p>
                 )}
                 
-                <VideoCallIcon
+                {/* <VideoCallIcon
                   onClick={()=>{setcalling(true); callUser(idToCall)}}
-                />
-                 {receivingCall && !callAccepted ? (
+                /> */}
+                 {/* {receivingCall && !callAccepted ? (
                   <div className="caller">
                     <p>{name} is calling...</p>
                     <Button
@@ -500,7 +828,7 @@ const fetchchats=async()=>{
                       Answer
                     </Button>
                   </div>
-                ) : null}
+                ) : null} */}
               </div>
               <div>
                 
@@ -511,70 +839,44 @@ const fetchchats=async()=>{
                 <FavoriteBorderOutlinedIcon/>
                 <NotificationsNoneIcon/> */}
             </div>
-          </div>
-          {calling ? (
-            <div className="container">
-              <div className="video-container">
-              {myVideo  ?  <div className="video" >
-                   
-                    <video
-                      playsInline
-                     
-                      ref={myVideo}
-                      autoPlay
-                      style={{ width: "300px" }}
-                    />
-                  
-                </div>:'no video'}
-                {callAccepted && userVideo  &&
-                <div className="video">
-                  
-                    <video
-                      playsInline
-                      ref={userVideo}
-                      autoPlay
-                    
-                      style={{ width: "300px" }}
-                    />
-                  
-                </div>}
-              </div>
-              <div className="call-button">
-					{callAccepted &&   
-						<Button variant="contained" color="secondary" onClick={()=>leaveCall()}>
-							End Call
-						</Button>
-			}
-				
-				</div>
-           
-            </div>
-          ) : (
-            <div className="messages">
-              {messages?.map((elem) => {
+          </div>}
+        
+            <div className="messages" onClick={() => setemojipicked(false)}>
+              {reciever.Name!='You'?messages?.map((elem) => {
                   return (
                     <div
                       className={elem.user == sender.Name ? "right" : "left"}
                     >
                       <div>
-                        <Avatar sx={{ bgcolor: deepOrange[500] }}>
-                          {elem.user && elem.user[0]}
-                        </Avatar>
+                       
+                        {group && elem.user != sender.Name && <b style={{background:"black",color:"aqua",fontSize:"10px",padding:"2px"}}>{elem.user && elem.user}</b>}
                       </div>
-                      <p>
-                        {elem.message}
+                     {!elem.image && !(elem.message).includes('https://firebasestorage.googleapis.com') &&<p>
+                        { elem.message}
                         <br />{" "}
                         <small style={{ textAlign: "end" }}>
                           {moment(elem.time).format("MMMM-DD hh:mm a")}
                         </small>
-                      </p>
+                      </p>}
+                      {elem.image&&
+                      <div style={{display:'flex',flexDirection:'column'}}>
+                      <img width={200} height={150} src={elem.image} alt="image loading.."/>
+                     
+                      <small style={{ textAlign: "end" ,background:"RGB(37, 211, 102)", paddingRight:'10px' }}>
+                        {moment(elem.time).format("MMMM-DD hh:mm a")}
+                      </small></div>
+                      
+                    }
+                      
                     </div>
                   );
-                })}
+                })
+                :<img style={{height:"60vh",width:'100%'}} src="image/chatd.jpg"/>
+                }
               <div ref={messageRef} />
             </div>
-          )}
-
+        
+          {reciever.Name!='You'&&
           <form style={{ height: "15%", width: "100%" }}>
             <div className="form1">
               <div>
@@ -588,6 +890,11 @@ const fetchchats=async()=>{
                   variant="standard"
                 />
               </div>
+              <div className="imgpick">
+              
+              <input name="file" type="file" id='file' className="file" accept="image/*" onChange={handleImageChange} />
+              <label htmlFor="file">< CameraAltIcon /></label>
+              </div>
               <div>
                 {/* <AddAPhotoTwoToneIcon style={{background:"blue",color:"white"}}/> */}
                 {maches && (
@@ -596,10 +903,10 @@ const fetchchats=async()=>{
                   />
                 )}
 
-                <div className={emojipicked ? "block" : "none"}>
+                <div className={emojipicked ? "block" : "none"} >
                   <EmojiPicker
-                    height={400}
-                    width={400}
+                    height={300}
+                    width={300}
                     onEmojiClick={(e) => setmsg(msg + e.emoji)}
                   />
                 </div>
@@ -617,6 +924,7 @@ const fetchchats=async()=>{
               </div>
             </div>
           </form>
+      }       
         </div>
         {/* <div className="thirdiv">
 
