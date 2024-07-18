@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 
 import FormControl from "@mui/material/FormControl";
-
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import Spinner from 'react-bootstrap/Spinner';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -142,8 +142,9 @@ const Register = () => {
              
            
               </FormControl>
-              
-              <input type="file"  accept="image/*" onChange={handleImageChange} name="file" id="" />
+              <label htmlFor="file">< CameraAltIcon /></label>
+              <input name="file" type="file" id='file' style={{paddingBottom:'0px'}}  accept="image/*" onChange={handleImageChange} />
+         
               
               {/* {image&&<img className="regimg" src={image} alt="" />}
               {loading&& !image&& <Spinner animation="grow" style={{width:'17px'}} size="sm" />} */}

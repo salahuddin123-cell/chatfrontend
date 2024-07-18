@@ -13,9 +13,9 @@ function App() {
     <div className='App'style={{msOverflowX:"hidden"}}>
    <Router>
      <Routes>
-     <Route path='/' element={<Register />}/>
+     <Route path='/register' element={<Register />}/>
      {/* <Route path='/test' element={<Test />}/> */}
-     <Route path='/login' element={<Login />}/>
+     <Route path='/' element={<Login />}/>
        <Route path='/chat' element={<ChatuiPage />}/>
       
      </Routes>

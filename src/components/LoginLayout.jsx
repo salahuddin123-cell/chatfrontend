@@ -11,8 +11,8 @@ const LoginLayout = ({children}) => {
      <div>
      <Stack spacing={2} direction="row">
      
-      <Button variant="contained" color={'primary'} onClick={()=>{setlogin(true);navigate("/login")}}>Login</Button>
-      <Button variant="contained" color={'secondary'} onClick={()=>{setlogin(false);navigate("/")}}>Register</Button>
+      <Button variant="contained" color={'primary'} onClick={()=>{setlogin(true);navigate("/")}}>Login</Button>
+      <Button variant="contained" color={'secondary'} onClick={()=>{setlogin(false);navigate("/register")}}>Register</Button>
     </Stack>
      </div>
      <div className="form">

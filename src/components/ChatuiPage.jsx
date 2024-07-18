@@ -329,7 +329,7 @@ const ChatuiPage = () => {
     let user1 = localStorage.getItem("user");
 
     if (!user1) {
-      navigate('/login')
+      navigate('/')
     }
   }, [localStorage.getItem("user")]);
 
@@ -547,7 +547,7 @@ const fetchchats=async()=>{
 
   const handlelogout = () => {
     localStorage.removeItem("user");
-    navigate("/login");
+    navigate("/");
   };
 
   useEffect(() => {
@@ -598,7 +598,7 @@ const deleteUser=async()=>{
  const res= await axios.post(`http://localhost:4001/deleteuser/${sender._id}`)
   if(res.status==201){
     alert('your account has been deleted succesfuly')
-    navigate('/login')
+    navigate('/')
   }
  } catch (error) {
   console.log(error)
