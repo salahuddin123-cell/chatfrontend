@@ -449,6 +449,7 @@ style={{width:"20px",height:"20px", margin:"auto",display:"grid",placeItems:"cen
   }
   .fisrtdiv>div:nth-child(1){
     padding-top: 50px;
+    margin-top: 10px;
   }
   .fisrtdiv>div:nth-child(2){
     margin-left: 40px;
