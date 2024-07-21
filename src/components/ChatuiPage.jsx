@@ -28,7 +28,7 @@ import { useNavigate } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import VideoCallIcon from "@mui/icons-material/VideoCall";
 import CancelIcon from '@mui/icons-material/Cancel';
-import CallModal from "./modal/CallModal";
+
 import Peer from "simple-peer"
 import { storage } from '../firebase'
 import {ref,uploadBytes,getDownloadURL} from 'firebase/storage'
@@ -871,7 +871,7 @@ const handleImageChange=async(e)=>{
                     </div>
                   );
                 })
-                :<img className="img2n" src="image/chatd.jpg"/>
+                :<img className="img2n" src="image/back.jpg"/>
                 }
               <div ref={messageRef} />
            
