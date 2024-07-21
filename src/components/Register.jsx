@@ -46,7 +46,7 @@ const Register = () => {
     
     let newdata= {...data,image:image,Lastseen:new Date().getTime()}
    
-   const res=  await axios.post('http://localhost:4001/register/new',newdata)
+   const res=  await axios.post('https://chatbackend-n9y2.onrender.com/register/new',newdata)
    
    if(res.status==201){
     localStorage.setItem("user",JSON.stringify(res.data.token))

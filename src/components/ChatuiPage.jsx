@@ -84,7 +84,7 @@ useEffect(() => {
     let new_ids=[...ids,sender._id]
     console.log(gname,selectedOptions)
     try {
-      await axios.post('http://localhost:4001/creategroup',{Name:gname,ids:new_ids,users:new_users})
+      await axios.post('https://chatbackend-n9y2.onrender.com/creategroup',{Name:gname,ids:new_ids,users:new_users})
     } catch (error) {
       console.log(error)
     }
@@ -140,7 +140,7 @@ const MultiSelectPopover2 = ({  setsender,sender,onClose }) => {
     return
   }
    try {
-    const res=await axios.post(`http://localhost:4001/userupdate/${sender._id}`,{Name:name,status:status})
+    const res=await axios.post(`https://chatbackend-n9y2.onrender.com/userupdate/${sender._id}`,{Name:name,status:status})
     
     if(res.status==201){
       setsender({...sender,Name:name,Occupation:status})
@@ -233,7 +233,7 @@ const ChatuiPage = () => {
   };
 
   useEffect(() => {
-    socket.current = io.connect("http://localhost:4001");
+    socket.current = io.connect("https://chatbackend-n9y2.onrender.com");
     return () => {
       socket.current.disconnect();
     };
@@ -367,7 +367,7 @@ const ChatuiPage = () => {
     socket.current.on("leave", (data) => {
       const senddata = async () => {
         try {
-          const res = await axios.post("http://localhost:4001/user/lsupdate", {
+          const res = await axios.post("https://chatbackend-n9y2.onrender.com/user/lsupdate", {
             data,
           });
           if (res.status == 200) {
@@ -437,7 +437,7 @@ const ChatuiPage = () => {
 const fetchchats=async()=>{
 
   try {
-    const res=await axios.post("http://localhost:4001/chat/all", {room:me})
+    const res=await axios.post("https://chatbackend-n9y2.onrender.com/chat/all", {room:me})
    //console.log(res.data)
     setmessages(res.data);
   
@@ -453,7 +453,7 @@ const fetchchats=async()=>{
     const fetchchats=async()=>{
     
       try {
-        const res=await axios.post("http://localhost:4001/getgroup", {_id:sender._id})
+        const res=await axios.post("https://chatbackend-n9y2.onrender.com/getgroup", {_id:sender._id})
       // console.log(res.data)
         setgroups(res.data);
       
@@ -519,7 +519,7 @@ const fetchchats=async()=>{
     let new_users=(elem.users).filter(e=>e!=sender.Name)
     let new_ids=(elem.ids).filter(e=>e!=sender._id)
     try {
-      await axios.post('http://localhost:4001/groupupdate',{Name:elem.Name,users:new_users,ids:new_ids})
+      await axios.post('https://chatbackend-n9y2.onrender.com/groupupdate',{Name:elem.Name,users:new_users,ids:new_ids})
       .then(data=>setleavegrp(!leavegrp))
     } catch (error) {
       console.log(error)
@@ -571,7 +571,7 @@ const fetchchats=async()=>{
   useEffect(() => {
     const fetchdata = async () => {
       try {
-        const res = await axios.get("http://localhost:4001/user/all")
+        const res = await axios.get("https://chatbackend-n9y2.onrender.com/user/all")
         if (res.status == 200) {
           setusers(res.data);
           setoptions(res.data)
@@ -595,7 +595,7 @@ const fetchchats=async()=>{
   };
 const deleteUser=async()=>{
  try {
- const res= await axios.post(`http://localhost:4001/deleteuser/${sender._id}`)
+ const res= await axios.post(`https://chatbackend-n9y2.onrender.com/deleteuser/${sender._id}`)
   if(res.status==201){
     alert('your account has been deleted succesfuly')
     navigate('/')
