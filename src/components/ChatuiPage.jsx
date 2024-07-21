@@ -709,7 +709,7 @@ const handleImageChange=async(e)=>{
             groups?.map(elem=>{
               return (
                 <div className="user">
-                <div>
+                <div >
                 
                     <Avatar sx={{ bgcolor: deepOrange[500] }}>
                       {elem.Name[0]}
@@ -871,9 +871,10 @@ const handleImageChange=async(e)=>{
                     </div>
                   );
                 })
-                :<img style={{height:"60vh",width:'100%'}} src="image/chatd.jpg"/>
+                :<img className="img2n" src="image/chatd.jpg"/>
                 }
               <div ref={messageRef} />
+           
             </div>
         
           {reciever.Name!='You'&&
@@ -889,37 +890,40 @@ const handleImageChange=async(e)=>{
                   placeholder="Write something"
                   variant="standard"
                 />
-              </div>
-              <div className="imgpick">
-              
-              <input name="file" type="file" id='file' className="file" accept="image/*" onChange={handleImageChange} />
-              <label htmlFor="file">< CameraAltIcon /></label>
-              </div>
-              <div>
-                {/* <AddAPhotoTwoToneIcon style={{background:"blue",color:"white"}}/> */}
-                {maches && (
+                     {maches && (
                   <SentimentSatisfiedAltIcon
                     onClick={() => setemojipicked(!emojipicked)}
                   />
                 )}
+                 <input name="file" type="file" id='file' className="file" accept="image/*" onChange={handleImageChange} />
+                 <label htmlFor="file">< CameraAltIcon /></label>
+              </div>
 
-                <div className={emojipicked ? "block" : "none"} >
+              <div className="imgpick">
+              <div className={emojipicked ? "block" : "none"} >
                   <EmojiPicker
                     height={300}
                     width={300}
                     onEmojiClick={(e) => setmsg(msg + e.emoji)}
                   />
                 </div>
+             
+              </div>
+              <div>
+                {/* <AddAPhotoTwoToneIcon style={{background:"blue",color:"white"}}/> */}
+           
+
+         
                 <button
                   type="submit"
-                  style={{ background: "blue", color: "white", height: "30px" }}
+                  style={{ background: "none",color:"blue", border:'none', height: "30px" }}
                   onClick={(e) => {
                     e.preventDefault();
                     send();
                   }}
                 >
                  
-                  <SendIcon />
+                  <SendIcon/>
                 </button>
               </div>
             </div>

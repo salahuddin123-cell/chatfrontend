@@ -61,6 +61,7 @@ const Login = () => {
       }
     }
    }
+
   return (
     <>
     <LoginLayout>
@@ -81,6 +82,9 @@ const Login = () => {
                 "@media (max-width: 520px)": {
                   width: "28ch",
                 },
+                "@media (max-width: 360px)": {
+                  width: "25ch",
+                },
               },
             }}
             noValidate
@@ -94,6 +98,8 @@ const Login = () => {
               variant="outlined"
               size="small"
               type="email"
+              
+              
             />
             <TextField
               id="filled-basic"
@@ -113,7 +119,7 @@ const Login = () => {
           </div>
           
         </form>
-      <p>For dummy login <button onClick={dummylogin}>click here</button></p>
+      <p>For dummy login <a className="clhere" onClick={dummylogin}>click here</a></p>
 
     </LoginLayout>
     </>
