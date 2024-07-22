@@ -865,7 +865,7 @@ const handleImageChange=async(e)=>{
                       </p>}
                       {elem.image&&
                       <div style={{display:'flex',flexDirection:'column'}}>
-                      <img width={200} height={150} src={elem.image} alt="image loading.."/>
+                      <img className="msgimg" src={elem.image} alt="image loading.."/>
                      
                       <small className={elem.user == sender.Name ? "rightimg" : "leftimg"} >
                         {moment(elem.time).format("MMMM-DD hh:mm a")}
