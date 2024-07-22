@@ -18,6 +18,7 @@ const Register = () => {
   const { register, handleSubmit,reset } = useForm();
   const [img, setimg] = useState()
   const [image,setimage]=useState('')
+ 
   const [loading, setloading] = useState(false)
   const navigate=useNavigate()
  
@@ -29,24 +30,29 @@ const Register = () => {
 
 
   const onSubmit =async (data) => {
-   
+  
     try{
+     
      if(img){
       const imageRef=ref(storage,`images/${img.name}`)
       await uploadBytes(imageRef,img).then((snapshot)=>{
-        getDownloadURL(snapshot.ref).then(url=>{
-          console.log(url)
+        getDownloadURL(snapshot.ref).then(async url=>{
+          let newdata=({...data,image:url,Lastseen:new Date().getTime()})
+          const res= await  axios.post('https://chatbackend-n9y2.onrender.com/register/new',newdata)
+          
+        if(res.status==201){
+          localStorage.setItem("user",JSON.stringify(res.data.token))
+          navigate('/chat')
          
-          setimage(url)
-          setloading(false) 
-        })
+        }
         
-      }) 
-     }
-    
-    let newdata= {...data,image:image,Lastseen:new Date().getTime()}
-   
-   const res=  await axios.post('https://chatbackend-n9y2.onrender.com/register/new',newdata)
+              })
+              
+            }) 
+     }else{
+      let newdata=({...data,image:image,Lastseen:new Date().getTime()})
+     
+     const res=  await axios.post('https://chatbackend-n9y2.onrender.com/register/new',newdata)
    
    if(res.status==201){
     localStorage.setItem("user",JSON.stringify(res.data.token))
@@ -54,6 +60,7 @@ const Register = () => {
    }
    else Promise.reject()
   
+  }
     }catch(err){
       // console.log(err.response?.data?.error?.code)
      

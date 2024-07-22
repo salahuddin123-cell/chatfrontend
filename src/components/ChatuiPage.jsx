@@ -515,6 +515,11 @@ const fetchchats=async()=>{
     setnotified(item);
     //console.log(item);
   };
+  const clearnotified2 = (name) => {
+    const item = notified.filter((e) => e.user !== name);
+    setnotified(item);
+    //console.log(item);
+  }
   const leavegroup=async(elem)=>{
     let new_users=(elem.users).filter(e=>e!=sender.Name)
     let new_ids=(elem.ids).filter(e=>e!=sender._id)
@@ -693,8 +698,8 @@ const handleImageChange=async(e)=>{
 
 
           <div>
-            <p>Groups <a style={{marginLeft:"40px"}}>
-            <button style={{border:"none"}} onClick={() => setIsPopoverOpen(!isPopoverOpen)}>create group</button>
+            <p>groups <a style={{marginLeft:"40px"}}>
+            <a style={{border:"none",color:"#0000FF",fontSize:"15px"}} onClick={() => setIsPopoverOpen(!isPopoverOpen)}>create group</a>
       {isPopoverOpen && (
         <MultiSelectPopover
           options={options}
@@ -738,7 +743,7 @@ const handleImageChange=async(e)=>{
 
                  
                 </div>
-                <button style={{border:"none"}} onClick={()=>leavegroup(elem)}>leave</button>
+                <a style={{border:"none",color:"#0000FF",fontSize:"15px"}} onClick={()=>leavegroup(elem)}>leave</a>
               </div>
               )
             })
@@ -759,15 +764,15 @@ const handleImageChange=async(e)=>{
                   <div
                     className={elem._id == reciever._id ? "active" : "inactive"}
                   >
-                    <b
+                    <b 
                       onClick={() => {
                         setreciever(elem);
-                        clearnotified(elem.Name);
+                        clearnotified2(elem.Name);
                         setgroup(null)
                       }}
                       style={{ cursor: "pointer" }}
                     >
-                      {elem.Name}
+                      {(elem.Name)[0].toUpperCase()+(elem.Name).slice(1)}
                     </b>
 
                     {!checkonline(elem.Name) && (
@@ -862,7 +867,7 @@ const handleImageChange=async(e)=>{
                       <div style={{display:'flex',flexDirection:'column'}}>
                       <img width={200} height={150} src={elem.image} alt="image loading.."/>
                      
-                      <small style={{ textAlign: "end" ,background:"RGB(37, 211, 102)", paddingRight:'10px' }}>
+                      <small className={elem.user == sender.Name ? "rightimg" : "leftimg"} >
                         {moment(elem.time).format("MMMM-DD hh:mm a")}
                       </small></div>
                       

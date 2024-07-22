@@ -423,6 +423,14 @@ style={{width:"20px",height:"20px", margin:"auto",display:"grid",placeItems:"cen
   width: 30px;
   border-radius: 50%;
 }
+.rightimg{
+  background-color: #1F94F1;
+  color: #C6EBFF;
+}
+.leftimg{
+  background: #C1C1C1;
+  color: black;
+}
 @media screen and (max-width:1080px) {
   .chatroom{
     width: 80%;
