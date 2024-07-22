@@ -807,8 +807,8 @@ const handleImageChange=async(e)=>{
               <div className="notification">
                 
                   <b style={{ color: "blue" }}>
-                    {reciever?.Name}
-                      {reciever.Occupation && (   <small className="oc">{reciever.Occupation}</small>) }
+                    {(reciever.Name)?.[0].toUpperCase()+(reciever.Name)?.slice(1)}
+                      {reciever.Occupation && (   <small className="oc">{(reciever.Occupation).toLowerCase()}</small>) }
                   </b>
                
                 {checkonline(reciever?.Name) && <p className="online"></p>}
