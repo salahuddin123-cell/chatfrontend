@@ -859,7 +859,7 @@ const handleImageChange=async(e)=>{
                      {!elem.image && !(elem.message).includes('https://firebasestorage.googleapis.com') &&<p>
                         { elem.message}
                         <br />{" "}
-                        <small style={{ textAlign: "end" }}>
+                        <small style={{ textAlign: "end",fontSize:'10px' }}>
                           {moment(elem.time).format("MMMM-DD hh:mm a")}
                         </small>
                       </p>}

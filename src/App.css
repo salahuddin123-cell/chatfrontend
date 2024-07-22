@@ -431,11 +431,13 @@ style={{width:"20px",height:"20px", margin:"auto",display:"grid",placeItems:"cen
   background-color: #1F94F1;
   color: #C6EBFF;
   padding-left: 20%;
+  font-size: 10px;
 }
 .leftimg{
   background: #C1C1C1;
   padding-left: 20%;
   color: black;
+  font-size: 10px;
 }
 @media screen and (max-width:1080px) {
   .msgimg{
