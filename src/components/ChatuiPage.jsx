@@ -174,14 +174,32 @@ const MultiSelectPopover2 = ({  setsender,sender,onClose }) => {
     </div>
   );
 };
+const DeletePopover = ({  onClose,deleteUser }) => {
 
+
+
+ 
+
+  return (
+    <div className="popover"> 
+      <div className="popover-content">
+      <p>Do you really want to delete your account?</p>
+      <button style={{boder:'none',background:"black",color:"white" ,marginRight:"20px"}} onClick={deleteUser}>Yes</button>
+      <button style={{boder:'none',background:"black",color:"white"}} onClick={onClose}>No</button>
+        </div>
+       
+
+      </div>
+   
+  );
+};
 
 const ChatuiPage = () => {
   const [users, setusers] = useState(null);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [isPopoverOpen2, setIsPopoverOpen2] = useState(false);
-
+  const [isPopoverOpen3, setIsPopoverOpen3] = useState(false);
   const [sender, setsender] = useState(() => {
     const savedItem = JSON.parse(localStorage.getItem("user"));
 
@@ -598,6 +616,9 @@ const fetchchats=async()=>{
   const handleClosePopover2 = () => {
     setIsPopoverOpen2(false);
   };
+  const handleClosePopover3 = () => {
+    setIsPopoverOpen3(false);
+  };
 const deleteUser=async()=>{
  try {
  const res= await axios.post(`https://chatbackend-n9y2.onrender.com/deleteuser/${sender._id}`)
@@ -650,7 +671,7 @@ const handleImageChange=async(e)=>{
   return (
     <div className="main">
       <div className="chatui" >
-        <div className="fisrtdiv" >
+        <div className="fisrtdiv" style={{height:!maches?reciever.Name=='You'?'100%':'35%':"100%"}} >
           <div>
             <div>
               {/* <Avatar sx={{ bgcolor: deepOrange[500] }}>{sender?.Name[0]}</Avatar> */}
@@ -664,17 +685,25 @@ const handleImageChange=async(e)=>{
             </div>
             <div>
               <b style={{ color: "blue" }}>{sender?.Name}</b>
-              <p>{sender.Occupation}</p>
+              <p style={{cursor:"pointer",textTransform:"lowercase",color:"blue"}} onClick={()=>setIsPopoverOpen2(!isPopoverOpen2)}>{sender.Occupation}</p>
             </div>
             <div>
               
               {/* <Tooltip title="edit detail"><EditIcon /></Tooltip> */}
-              <Tooltip title="update status" placement="top" onClick={()=>setIsPopoverOpen2(!isPopoverOpen2)}>
+              {/* <Tooltip title="update status" placement="top" onClick={()=>setIsPopoverOpen2(!isPopoverOpen2)}>
               <EditIcon />
-          </Tooltip>
+          </Tooltip> */}
           <Tooltip title="delete account" placement="top-end">
-            <DeleteIcon onClick={deleteUser}/>
+            
+            <DeleteIcon onClick={()=>setIsPopoverOpen3(!isPopoverOpen3)}/>
           </Tooltip>
+          {isPopoverOpen3 && (
+        <DeletePopover
+         deleteUser={deleteUser}
+          sender={sender}
+          onClose={handleClosePopover3}
+          setsender={setsender}
+        /> )}
              <Tooltip title="logout"><LogoutIcon onClick={handlelogout} style={{marginLeft:"20px"}}/></Tooltip> 
             </div>
             {isPopoverOpen2 && (
@@ -770,7 +799,7 @@ const handleImageChange=async(e)=>{
                         clearnotified2(elem.Name);
                         setgroup(null)
                       }}
-                      style={{ cursor: "pointer" }}
+                      style={{ cursor: "pointer",fontFamily:"monospace",fontSize:"15px" }}
                     >
                       {(elem.Name)[0].toUpperCase()+(elem.Name).slice(1)}
                     </b>
@@ -793,7 +822,7 @@ const handleImageChange=async(e)=>{
             }):<Spinner animation="border" />}
           </div>
         </div>
-        <div className="secondiv">
+        <div className="secondiv" style={{height:!maches?reciever.Name=='You'?'0px':'65%':"100%",display:!maches&&reciever.Name=='You'?'none':''}} >
         {reciever.Name!='You'&&
           <div>
             
@@ -876,7 +905,7 @@ const handleImageChange=async(e)=>{
                     </div>
                   );
                 })
-                :<img className="img2n" src="image/back.jpg"/>
+                :<img className="img2n"  src="image/back.jpg"/>
                 }
               <div ref={messageRef} />
            

@@ -18,6 +18,7 @@ const Register = () => {
   const { register, handleSubmit,reset } = useForm();
   const [img, setimg] = useState()
   const [image,setimage]=useState('')
+  const [clas,setclas]=useState('file')
  
   const [loading, setloading] = useState(false)
   const navigate=useNavigate()
@@ -25,7 +26,7 @@ const Register = () => {
   const handleImageChange=(e)=>{
     setloading(true)
    setimg(e.target.files[0])
-   
+   setclas('')
   }
 
 
@@ -149,8 +150,8 @@ const Register = () => {
              
            
               </FormControl>
-              <label htmlFor="file">< CameraAltIcon /></label>
-              <input name="file" type="file" id='file' style={{paddingBottom:'0px'}}  accept="image/*" onChange={handleImageChange} />
+              <label htmlFor="file">Photo < CameraAltIcon /></label>
+              <input name="file" type="file" className={clas}  id='file' style={{paddingBottom:'0px'}}  accept="image/*" onChange={handleImageChange} />
          
               
               {/* {image&&<img className="regimg" src={image} alt="" />}
