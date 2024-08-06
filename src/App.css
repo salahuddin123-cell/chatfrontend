@@ -400,7 +400,7 @@ style={{width:"20px",height:"20px", margin:"auto",display:"grid",placeItems:"cen
   color: rgb(114, 6, 94);
 }
 .ls{
- transform: translateY(6px);
+ transform: translateY(2px);
 }
 .online{
   width: 10px;

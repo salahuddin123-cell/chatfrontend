@@ -728,7 +728,7 @@ const handleImageChange=async(e)=>{
 
           <div>
             <p>groups <a style={{marginLeft:"40px"}}>
-            <a style={{border:"none",color:"#0000FF",fontSize:"15px"}} onClick={() => setIsPopoverOpen(!isPopoverOpen)}>create group</a>
+            <a style={{border:"none",color:"#0000FF",fontSize:"15px",cursor:"pointer"}} onClick={() => setIsPopoverOpen(!isPopoverOpen)}>create group</a>
       {isPopoverOpen && (
         <MultiSelectPopover
           options={options}
@@ -806,7 +806,7 @@ const handleImageChange=async(e)=>{
 
                     {!checkonline(elem.Name) && (
                       <p style={{ fontSize: "12px" }}>
-                        last seen {formattime(elem.Lastseen)}
+                        last seen - {formattime(elem.Lastseen)}
                       </p>
                     )}
                   </div>
